@@ -10,12 +10,24 @@
 
 #include "FreeRTOS.h"
 #include "queue.h"
+#include "stm32l5xx_hal.h"
 
-class uartClass {
+struct TaskParams{
+	uint16_t stackSize;
+	uint8_t prio;
+	uint8_t queueLength;
+	uint16_t queueElementSize;
+};
+
+
+class usartClass {
 public:
-	uartClass();
+//	usartClass();
+	usartClass();
 
-	~uartClass();
+	~usartClass();
+
+	void initTasks(TaskParams rxTask, TaskParams txTask, UART_HandleTypeDef *huart);
 
 
     /**
@@ -52,6 +64,8 @@ private:
 	QueueHandle_t m_hRxQueue;
 
 	void* m_TxTaskCallback;
+
+	UART_HandleTypeDef* m_huart;
 
 
 

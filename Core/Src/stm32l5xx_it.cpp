@@ -279,13 +279,13 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	  {
 		 BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 //		 uartRXHandler(0);
-		 xQueueGenericSendFromISR(xQueueUART3RX,uartRXBuff,&xHigherPriorityTaskWoken,queueSEND_TO_BACK);
+//		 xQueueGenericSendFromISR(xQueueUART3RX,uartRXBuff,&xHigherPriorityTaskWoken,queueSEND_TO_BACK);
 
 
 		 memset(uartRXBuff,0,UARTRXBUFFERSIZE);
 
 
-		 HAL_UART_Receive_DMA(&huart1,(unsigned char*) uartRXBuff,UARTRXBUFFERSIZE); // start receiving
+//		 HAL_UART_Receive_DMA(&huart1,(unsigned char*) uartRXBuff,UARTRXBUFFERSIZE); // start receiving
 		 if( xHigherPriorityTaskWoken ){
 			 portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 //			 SEGGER_SYSVIEW_RecordExitISRToScheduler();
@@ -302,7 +302,7 @@ void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
 	{
 //		uartRXHandler(NULL);
 
-		vTaskNotifyGiveFromISR((TaskHandle_t)uartTxTaskHandle, &xHigherPriorityTaskWoken); // wake UART send task, when transfer is done
+//		vTaskNotifyGiveFromISR((TaskHandle_t)uartTxTaskHandle, &xHigherPriorityTaskWoken); // wake UART send task, when transfer is done
 		/* Actual macro used here is port specific. */
 
 		if (xHigherPriorityTaskWoken == pdTRUE) {							   // context switch
