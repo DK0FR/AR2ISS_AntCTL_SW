@@ -8,6 +8,8 @@
 #include "usartClass.hpp"
 #include <stdio.h>
 #include <string.h>
+#include "main.h"
+#include "cmsis_os2.h"
 
 void uartName(UART_HandleTypeDef *handle, uint8_t* string, uint8_t size);
 
@@ -75,11 +77,14 @@ void usartClass::RxTask(void *argument){
 
 void usartClass::TxTask(){
   // start task
+	HAL_GPIO_TogglePin(ROT_LEFT_GPIO_Port, ROT_LEFT_Pin);
+	osDelay(200);
 
 }
 void usartClass::RxTask(){
   // start task
-
+	HAL_GPIO_TogglePin(ROT_UP_GPIO_Port, ROT_DOWN_Pin);
+	osDelay(200);
 }
 
 void uartName(UART_HandleTypeDef *handle, uint8_t* string, uint8_t size){

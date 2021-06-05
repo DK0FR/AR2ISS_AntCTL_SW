@@ -26,10 +26,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "queue.h"
-#include "uartHandlers.h"
-#include "app_freertos.h"
-#include "usartClass.hpp"
 
 /* USER CODE END Includes */
 
@@ -50,36 +46,32 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-QueueHandle_t xQueueUART3RX;
-QueueHandle_t xQueueUART3TX;
-
-//usartClass RS485Uart;
-
-extern UART_HandleTypeDef huart1;
 
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 128,
-  .priority = (osPriority_t) osPriorityNormal
+  .priority = (osPriority_t) osPriorityNormal,
+  .stack_size = 128
 };
 /* Definitions for pttControlTask */
 osThreadId_t pttControlTaskHandle;
 const osThreadAttr_t pttControlTask_attributes = {
   .name = "pttControlTask",
-  .stack_size = 128,
-  .priority = (osPriority_t) osPriorityRealtime
+  .priority = (osPriority_t) osPriorityRealtime,
+  .stack_size = 128
 };
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
 
 /* USER CODE END FunctionPrototypes */
+
 void StartDefaultTask(void *argument);
 void pttControl(void *argument);
 
+void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* Hook prototypes */
 void configureTimerForRunTimeStats(void);
@@ -121,7 +113,7 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
-
+  /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
@@ -132,22 +124,8 @@ void MX_FREERTOS_Init(void) {
   pttControlTaskHandle = osThreadNew(pttControl, NULL, &pttControlTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
-
-
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
-
-
-  TaskParams param = {
-	  .stackSize = 128,
-	  .prio = 10,
-	  .queueLength = 10,
-	  .queueElementSize = 50
-  };
-
-
-//  RS485Uart.initTasks(param, param, &huart1);
-
 
   /* USER CODE BEGIN RTOS_EVENTS */
   /* add events, ... */
@@ -169,10 +147,6 @@ void StartDefaultTask(void *argument)
   for(;;)
   {
     osDelay(1);
-	  HAL_GPIO_TogglePin(RJ45_LED2_GPIO_Port, RJ45_LED2_Pin);
-	  osDelay(500);
-	  HAL_GPIO_TogglePin(RJ45_LED2_GPIO_Port, RJ45_LED2_Pin);
-	  osDelay(500);
   }
   /* USER CODE END StartDefaultTask */
 }
@@ -190,7 +164,7 @@ __weak void pttControl(void *argument)
   /* Infinite loop */
   for(;;)
   {
-	  osDelay(500);
+    osDelay(1);
   }
   /* USER CODE END pttControl */
 }
