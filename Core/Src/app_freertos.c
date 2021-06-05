@@ -26,7 +26,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "queue.h"
+#include "uartHandlers.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,6 +47,10 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
+QueueHandle_t xQueueUART3RX;
+QueueHandle_t xQueueUART3TX;
+
+
 
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
@@ -55,19 +60,33 @@ const osThreadAttr_t defaultTask_attributes = {
   .priority = (osPriority_t) osPriorityNormal,
   .stack_size = 128
 };
-/* Definitions for uartRx */
-osThreadId_t uartRxHandle;
-const osThreadAttr_t uartRx_attributes = {
-  .name = "uartRx",
+/* Definitions for uartRxTask */
+osThreadId_t uartRxTaskHandle;
+const osThreadAttr_t uartRxTask_attributes = {
+  .name = "uartRxTask",
   .priority = (osPriority_t) osPriorityNormal,
   .stack_size = 256
 };
-/* Definitions for uartTx */
-osThreadId_t uartTxHandle;
-const osThreadAttr_t uartTx_attributes = {
-  .name = "uartTx",
+/* Definitions for uartTxTask */
+osThreadId_t uartTxTaskHandle;
+const osThreadAttr_t uartTxTask_attributes = {
+  .name = "uartTxTask",
   .priority = (osPriority_t) osPriorityNormal,
   .stack_size = 256
+};
+/* Definitions for rotorControlTas */
+osThreadId_t rotorControlTasHandle;
+const osThreadAttr_t rotorControlTas_attributes = {
+  .name = "rotorControlTas",
+  .priority = (osPriority_t) osPriorityBelowNormal,
+  .stack_size = 128
+};
+/* Definitions for pttControlTask */
+osThreadId_t pttControlTaskHandle;
+const osThreadAttr_t pttControlTask_attributes = {
+  .name = "pttControlTask",
+  .priority = (osPriority_t) osPriorityRealtime,
+  .stack_size = 128
 };
 
 /* Private function prototypes -----------------------------------------------*/
@@ -76,8 +95,10 @@ const osThreadAttr_t uartTx_attributes = {
 /* USER CODE END FunctionPrototypes */
 
 void StartDefaultTask(void *argument);
-void uartRxTask(void *argument);
-void uartTxTask(void *argument);
+void uartRx(void *argument);
+void uartTx(void *argument);
+void rotorControl(void *argument);
+void pttControl(void *argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -121,20 +142,32 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_TIMERS */
 
   /* USER CODE BEGIN RTOS_QUEUES */
-  /* add queues, ... */
+	xQueueUART3RX = xQueueCreate(3,UARTRXBUFFERSIZE*sizeof(uint8_t));
+	xQueueUART3TX = xQueueCreate(10,sizeof(UartTXStruct));
+
+	vQueueAddToRegistry(xQueueUART3RX, (const char*) "Q_UART3RX");
+	vQueueAddToRegistry(xQueueUART3TX, (const char*) "Q_UART3TX");
   /* USER CODE END RTOS_QUEUES */
 
   /* Create the thread(s) */
   /* creation of defaultTask */
   defaultTaskHandle = osThreadNew(StartDefaultTask, NULL, &defaultTask_attributes);
 
-  /* creation of uartRx */
-  uartRxHandle = osThreadNew(uartRxTask, NULL, &uartRx_attributes);
+  /* creation of uartRxTask */
+  uartRxTaskHandle = osThreadNew(uartRx, NULL, &uartRxTask_attributes);
 
-  /* creation of uartTx */
-  uartTxHandle = osThreadNew(uartTxTask, NULL, &uartTx_attributes);
+  /* creation of uartTxTask */
+  uartTxTaskHandle = osThreadNew(uartTx, NULL, &uartTxTask_attributes);
+
+  /* creation of rotorControlTas */
+  rotorControlTasHandle = osThreadNew(rotorControl, NULL, &rotorControlTas_attributes);
+
+  /* creation of pttControlTask */
+  pttControlTaskHandle = osThreadNew(pttControl, NULL, &pttControlTask_attributes);
 
   /* USER CODE BEGIN RTOS_THREADS */
+
+
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
 
@@ -162,40 +195,76 @@ void StartDefaultTask(void *argument)
   /* USER CODE END StartDefaultTask */
 }
 
-/* USER CODE BEGIN Header_uartRxTask */
+/* USER CODE BEGIN Header_uartRx */
 /**
-* @brief Function implementing the uartRx thread.
+* @brief Function implementing the uartRxTask thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_uartRxTask */
-__weak void uartRxTask(void *argument)
+/* USER CODE END Header_uartRx */
+__weak void uartRx(void *argument)
 {
-  /* USER CODE BEGIN uartRxTask */
+  /* USER CODE BEGIN uartRx */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END uartRxTask */
+  /* USER CODE END uartRx */
 }
 
-/* USER CODE BEGIN Header_uartTxTask */
+/* USER CODE BEGIN Header_uartTx */
 /**
-* @brief Function implementing the uartTx thread.
+* @brief Function implementing the uartTxTask thread.
 * @param argument: Not used
 * @retval None
 */
-/* USER CODE END Header_uartTxTask */
-__weak void uartTxTask(void *argument)
+/* USER CODE END Header_uartTx */
+__weak void uartTx(void *argument)
 {
-  /* USER CODE BEGIN uartTxTask */
+  /* USER CODE BEGIN uartTx */
   /* Infinite loop */
   for(;;)
   {
     osDelay(1);
   }
-  /* USER CODE END uartTxTask */
+  /* USER CODE END uartTx */
+}
+
+/* USER CODE BEGIN Header_rotorControl */
+/**
+* @brief Function implementing the rotorControlTas thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_rotorControl */
+__weak void rotorControl(void *argument)
+{
+  /* USER CODE BEGIN rotorControl */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END rotorControl */
+}
+
+/* USER CODE BEGIN Header_pttControl */
+/**
+* @brief Function implementing the pttControlTask thread.
+* @param argument: Not used
+* @retval None
+*/
+/* USER CODE END Header_pttControl */
+__weak void pttControl(void *argument)
+{
+  /* USER CODE BEGIN pttControl */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(1);
+  }
+  /* USER CODE END pttControl */
 }
 
 /* Private application code --------------------------------------------------*/

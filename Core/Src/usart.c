@@ -21,7 +21,7 @@
 #include "usart.h"
 
 /* USER CODE BEGIN 0 */
-
+#include "stm32l5xx_ll_usart.h"
 /* USER CODE END 0 */
 
 UART_HandleTypeDef huart1;
@@ -117,6 +117,9 @@ void HAL_UART_MspInit(UART_HandleTypeDef* uartHandle)
     HAL_NVIC_SetPriority(USART1_IRQn, 5, 0);
     HAL_NVIC_EnableIRQ(USART1_IRQn);
   /* USER CODE BEGIN USART1_MspInit 1 */
+    LL_USART_EnableRxTimeout(uartHandle->Instance);
+    LL_USART_SetRxTimeout(uartHandle->Instance, 0xFF);
+    LL_USART_EnableIT_RTO(uartHandle->Instance);
 
   /* USER CODE END USART1_MspInit 1 */
   }

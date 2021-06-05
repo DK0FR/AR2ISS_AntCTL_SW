@@ -10,10 +10,25 @@
 #ifdef __cplusplus
  extern "C" {
 #endif
+
+#include "stdbool.h"
+
 void uartRXHandler(void const * argument);
 void uartTXHandler(void const * argument);
-void startCommandInterpreter(void const * argument);
-bool setSensorZeroPoint(uint8_t setSensorZero);
+
+
+
+#define UARTRXBUFFERSIZE 500
+#define UARTTXBUFFERSIZE 500
+
+
+typedef struct {
+	uint8_t* bufPtr;
+	bool usedInRTOS;
+	uint16_t size;
+} UartTXStruct;
+
+
 
 enum StepTypes { Unkown, SingleStep, MultiStep, SingleDuty, Dutysweep};
 
