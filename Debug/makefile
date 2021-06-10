@@ -80,8 +80,8 @@ all: main-build
 main-build: AR2ISS_AntCTL_SW.elf secondary-outputs
 
 # Tool invocations
-AR2ISS_AntCTL_SW.elf: $(OBJS) $(USER_OBJS) C:\Users\Labor\Documents\GitHub\AR2ISS\AR2ISS_AntCTL_SW\STM32L552CCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "AR2ISS_AntCTL_SW.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m33 -T"C:\Users\Labor\Documents\GitHub\AR2ISS\AR2ISS_AntCTL_SW\STM32L552CCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AR2ISS_AntCTL_SW.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+AR2ISS_AntCTL_SW.elf: $(OBJS) $(USER_OBJS) C:\Users\Soeren\Documents\GitHub\AR2ISS\AR2ISS_AntCTL_SW\STM32L552CCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-g++ -o "AR2ISS_AntCTL_SW.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m33 -T"C:\Users\Soeren\Documents\GitHub\AR2ISS\AR2ISS_AntCTL_SW\STM32L552CCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AR2ISS_AntCTL_SW.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 

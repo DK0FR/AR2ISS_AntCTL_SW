@@ -23,7 +23,7 @@
 #include "stm32l5xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "uartHandlers.h"
+#include "usartClass.hpp"
 #include "FreeRTOS.h"
 #include "queue.h"
 #include <string.h>
@@ -69,10 +69,8 @@ extern UART_HandleTypeDef huart1;
 extern TIM_HandleTypeDef htim17;
 
 /* USER CODE BEGIN EV */
-extern QueueHandle_t xQueueUART3RX;
-extern QueueHandle_t xQueueUART3TX;
-extern uint8_t uartRXBuff[UARTRXBUFFERSIZE];
-extern osThreadId_t uartTxTaskHandle;
+extern usartClass RS485Uart;
+
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -277,38 +275,16 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 //	SEGGER_SYSVIEW_RecordEnterISR();
 	 if(huart->Instance==USART3) // Is it the USB-Com port?
 	  {
-		 BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-//		 uartRXHandler(0);
-//		 xQueueGenericSendFromISR(xQueueUART3RX,uartRXBuff,&xHigherPriorityTaskWoken,queueSEND_TO_BACK);
-
-
-		 memset(uartRXBuff,0,UARTRXBUFFERSIZE);
-
-
-//		 HAL_UART_Receive_DMA(&huart1,(unsigned char*) uartRXBuff,UARTRXBUFFERSIZE); // start receiving
-		 if( xHigherPriorityTaskWoken ){
-			 portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-//			 SEGGER_SYSVIEW_RecordExitISRToScheduler();
-		 }
-
+		 RS485Uart.rxCpltCallback();
 	  }
 //	 SEGGER_SYSVIEW_RecordExitISR();
 }
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
-	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 //	SEGGER_SYSVIEW_RecordEnterISR();
 	if(huart->Instance==USART3) // Is it the USB-Com port?
 	{
-//		uartRXHandler(NULL);
-
-//		vTaskNotifyGiveFromISR((TaskHandle_t)uartTxTaskHandle, &xHigherPriorityTaskWoken); // wake UART send task, when transfer is done
-		/* Actual macro used here is port specific. */
-
-		if (xHigherPriorityTaskWoken == pdTRUE) {							   // context switch
-//			SEGGER_SYSVIEW_RecordExitISRToScheduler();
-			portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
-		}
+		RS485Uart.txCpltCallback();
 	}
 //	SEGGER_SYSVIEW_RecordExitISR();
 

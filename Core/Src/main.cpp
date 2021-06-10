@@ -105,6 +105,7 @@ int main(void)
   MX_TIM1_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
+//  NVIC_PriorityGroupConfig(NVIC_PRIORITYGROUP_3);
 
   /* USER CODE END 2 */
 
@@ -173,6 +174,8 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
+
+
 
 /* USER CODE END 4 */
 

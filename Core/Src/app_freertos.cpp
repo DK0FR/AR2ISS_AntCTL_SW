@@ -27,7 +27,6 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "queue.h"
-#include "uartHandlers.h"
 #include "app_freertos.h"
 #include "usartClass.hpp"
 
@@ -50,10 +49,8 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN Variables */
-QueueHandle_t xQueueUART3RX;
-QueueHandle_t xQueueUART3TX;
 
-//usartClass RS485Uart;
+usartClass RS485Uart;
 
 extern UART_HandleTypeDef huart1;
 
@@ -62,20 +59,21 @@ extern UART_HandleTypeDef huart1;
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 128,
+  .stack_size = 256,
   .priority = (osPriority_t) osPriorityNormal
 };
 /* Definitions for pttControlTask */
 osThreadId_t pttControlTaskHandle;
 const osThreadAttr_t pttControlTask_attributes = {
   .name = "pttControlTask",
-  .stack_size = 128,
+  .stack_size = 256,
   .priority = (osPriority_t) osPriorityRealtime
 };
 
+
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN FunctionPrototypes */
-
+void  rxCallback( UART_HandleTypeDef * huart, uint8_t* data, uint16_t length);
 /* USER CODE END FunctionPrototypes */
 void StartDefaultTask(void *argument);
 void pttControl(void *argument);
@@ -138,16 +136,28 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_THREADS */
 
 
-  TaskParams param = {
-	  .stackSize = 128,
+  TaskParams paramRx = {
+	  .stackSize = 256,
 	  .prio = 10,
 	  .queueLength = 10,
-	  .queueElementSize = 50
+	  .queueElementLength = 50
   };
+  TaskParams paramTx = {
+	  .stackSize = 256,
+	  .prio = 10,
+	  .queueLength = 10,
+	  .queueElementLength = 0
+  };
+	LedsSetup leds = {
+		.RXPORT = RJ45_LED2_GPIO_Port,
+		.TXPORT = Rj45_LED1_GPIO_Port,
+		.RXPIN  =  RJ45_LED2_Pin,
+		.TXPIN  =  Rj45_LED1_Pin,
+	};
 
 
-//  RS485Uart.initTasks(param, param, &huart1);
-
+  RS485Uart.initTasks(paramRx, paramTx, &huart1,&rxCallback);
+  RS485Uart.setupLeds(leds);
 
   /* USER CODE BEGIN RTOS_EVENTS */
   /* add events, ... */
@@ -169,9 +179,9 @@ void StartDefaultTask(void *argument)
   for(;;)
   {
     osDelay(1);
-	  HAL_GPIO_TogglePin(RJ45_LED2_GPIO_Port, RJ45_LED2_Pin);
+	  HAL_GPIO_TogglePin(AMP_GPIO_Port, AMP_Pin);
 	  osDelay(500);
-	  HAL_GPIO_TogglePin(RJ45_LED2_GPIO_Port, RJ45_LED2_Pin);
+//	  HAL_GPIO_TogglePin(RJ45_LED2_GPIO_Port, RJ45_LED2_Pin);
 	  osDelay(500);
   }
   /* USER CODE END StartDefaultTask */
@@ -197,6 +207,11 @@ __weak void pttControl(void *argument)
 
 /* Private application code --------------------------------------------------*/
 /* USER CODE BEGIN Application */
+
+void  rxCallback( UART_HandleTypeDef * huart, uint8_t* data, uint16_t length){
+	HAL_GPIO_TogglePin(Rj45_LED1_GPIO_Port, Rj45_LED1_Pin);
+
+}
 
 /* USER CODE END Application */
 
