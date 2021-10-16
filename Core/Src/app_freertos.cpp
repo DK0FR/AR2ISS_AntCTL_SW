@@ -51,22 +51,25 @@
 /* USER CODE BEGIN Variables */
 
 usartClass RS485Uart;
+uint8_t sendData[12] = "Test123456";
 
 extern UART_HandleTypeDef huart1;
+QueueHandle_t rxQueue;
+QueueHandle_t txQueue;
 
 /* USER CODE END Variables */
 /* Definitions for defaultTask */
 osThreadId_t defaultTaskHandle;
 const osThreadAttr_t defaultTask_attributes = {
   .name = "defaultTask",
-  .stack_size = 256,
+  .stack_size = 512,
   .priority = (osPriority_t) osPriorityNormal
 };
 /* Definitions for pttControlTask */
 osThreadId_t pttControlTaskHandle;
 const osThreadAttr_t pttControlTask_attributes = {
   .name = "pttControlTask",
-  .stack_size = 256,
+  .stack_size = 512,
   .priority = (osPriority_t) osPriorityRealtime
 };
 
@@ -146,7 +149,7 @@ void MX_FREERTOS_Init(void) {
 	  .stackSize = 256,
 	  .prio = 10,
 	  .queueLength = 10,
-	  .queueElementLength = 0
+	  .queueElementLength = 20
   };
 	LedsSetup leds = {
 		.RXPORT = RJ45_LED2_GPIO_Port,
@@ -175,13 +178,15 @@ void MX_FREERTOS_Init(void) {
 void StartDefaultTask(void *argument)
 {
   /* USER CODE BEGIN StartDefaultTask */
+	 osDelay(1000);
+	rxQueue = RS485Uart.getRxQueueHandle();
+	txQueue = RS485Uart.getTxQueueHandle();
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
-	  HAL_GPIO_TogglePin(AMP_GPIO_Port, AMP_Pin);
+	  HAL_GPIO_TogglePin(ROT_DOWN_GPIO_Port, ROT_DOWN_Pin);
+	  xQueueSend(txQueue, sendData, 500);
 	  osDelay(500);
-//	  HAL_GPIO_TogglePin(RJ45_LED2_GPIO_Port, RJ45_LED2_Pin);
 	  osDelay(500);
   }
   /* USER CODE END StartDefaultTask */
@@ -201,7 +206,7 @@ __weak void pttControl(void *argument)
   for(;;)
   {
 	  osDelay(500);
-  }
+	  HAL_GPIO_TogglePin(ROT_UP_GPIO_Port, ROT_UP_Pin);  }
   /* USER CODE END pttControl */
 }
 
@@ -209,7 +214,7 @@ __weak void pttControl(void *argument)
 /* USER CODE BEGIN Application */
 
 void  rxCallback( UART_HandleTypeDef * huart, uint8_t* data, uint16_t length){
-	HAL_GPIO_TogglePin(Rj45_LED1_GPIO_Port, Rj45_LED1_Pin);
+	HAL_GPIO_TogglePin(ROT_LEFT_GPIO_Port, ROT_LEFT_Pin);
 
 }
 

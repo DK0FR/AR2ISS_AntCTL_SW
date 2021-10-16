@@ -17,9 +17,9 @@
 void uartName(UART_HandleTypeDef *handle, uint8_t* string, uint8_t size);
 
 
-usartClass::usartClass():m_huart(NULL),m_hRxQueue(NULL),m_hRxTask(NULL),m_hTxTask(NULL){
+usartClass::usartClass():m_hTxTask(NULL),m_hRxTask(NULL),m_hTxQueue(NULL),m_hRxQueue(NULL){
 
-//	m_huart = NULL;
+	m_huart = NULL;
 //	m_hRxQueue = NULL;
 //	m_hTxQueue = NULL;
 //	m_hRxTask = NULL;
@@ -92,7 +92,7 @@ void usartClass::TxTask(){
 	if(m_txTaskParam.queueElementLength == 0)
 		TxTaskDynamic();
 	else
-		TxTaskDynamic();
+		TxTaskStatic();
 }
 
 void usartClass::TxTaskDynamic(){
@@ -127,8 +127,8 @@ void usartClass::TxTaskDynamic(){
 			if(m_LedsOn)
 				HAL_GPIO_WritePin(m_Leds.TXPORT, m_Leds.TXPIN, GPIO_PIN_RESET);
 		}else {
-			if(m_LedsOn)
-				HAL_GPIO_TogglePin(m_Leds.TXPORT, m_Leds.TXPIN);
+//			if(m_LedsOn)
+//				HAL_GPIO_TogglePin(m_Leds.TXPORT, m_Leds.TXPIN);
 		}
 
 	}
@@ -159,8 +159,8 @@ void usartClass::TxTaskStatic(){
 			if(m_LedsOn)
 				HAL_GPIO_WritePin(m_Leds.TXPORT, m_Leds.TXPIN, GPIO_PIN_RESET);
 		} else {
-			if(m_LedsOn)
-				HAL_GPIO_TogglePin(m_Leds.TXPORT, m_Leds.TXPIN);
+//			if(m_LedsOn)
+//				HAL_GPIO_TogglePin(m_Leds.TXPORT, m_Leds.TXPIN);
 		}
 	}
 }

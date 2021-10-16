@@ -56,8 +56,8 @@ $(wildcard ../makefile.targets) \
 
 BUILD_ARTIFACT_NAME := AR2ISS_AntCTL_SW
 BUILD_ARTIFACT_EXTENSION := elf
-BUILD_ARTIFACT_PREFIX := 
-BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME).$(BUILD_ARTIFACT_EXTENSION)
+BUILD_ARTIFACT_PREFIX :=
+BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
 
 # Add inputs and outputs from these tool invocations to the build variables 
 EXECUTABLES += \
@@ -80,8 +80,8 @@ all: main-build
 main-build: AR2ISS_AntCTL_SW.elf secondary-outputs
 
 # Tool invocations
-AR2ISS_AntCTL_SW.elf: $(OBJS) $(USER_OBJS) C:\Users\Soeren\Documents\GitHub\AR2ISS\AR2ISS_AntCTL_SW\STM32L552CCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-g++ -o "AR2ISS_AntCTL_SW.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m33 -T"C:\Users\Soeren\Documents\GitHub\AR2ISS\AR2ISS_AntCTL_SW\STM32L552CCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AR2ISS_AntCTL_SW.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
+AR2ISS_AntCTL_SW.elf: $(OBJS) $(USER_OBJS) C:\Users\Labor\Documents\GitHub\AR2ISS\AR2ISS_AntCTL_SW\STM32L552CCTX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-g++ -o "AR2ISS_AntCTL_SW.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m33 -T"C:\Users\Labor\Documents\GitHub\AR2ISS\AR2ISS_AntCTL_SW\STM32L552CCTX_FLASH.ld" --specs=nosys.specs -Wl,-Map="AR2ISS_AntCTL_SW.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv5-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -lstdc++ -lsupc++ -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
@@ -102,7 +102,7 @@ AR2ISS_AntCTL_SW.bin: $(EXECUTABLES) makefile objects.list $(OPTIONAL_TOOL_DEPS)
 
 # Other Targets
 clean:
-	-$(RM) *
+	-$(RM) $(OBJDUMP_LIST)$(C_UPPER_DEPS)$(S_DEPS)$(C_DEPS)$(OBJCOPY_BIN)$(CC_DEPS)$(SIZE_OUTPUT)$(C++_DEPS)$(EXECUTABLES)$(OBJS)$(CXX_DEPS)$(S_UPPER_DEPS)$(CPP_DEPS) AR2ISS_AntCTL_SW.elf
 	-@echo ' '
 
 secondary-outputs: $(SIZE_OUTPUT) $(OBJDUMP_LIST) $(OBJCOPY_BIN)
@@ -115,6 +115,5 @@ warn-no-linker-script-specified:
 	@echo 'Warning: No linker script specified. Check the linker settings in the build configuration.'
 
 .PHONY: all clean dependents fail-specified-linker-script-missing warn-no-linker-script-specified
-.SECONDARY:
 
 -include ../makefile.targets
