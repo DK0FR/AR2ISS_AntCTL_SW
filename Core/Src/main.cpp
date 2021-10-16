@@ -118,8 +118,11 @@ int main(void)
   /* We should never get here as control is now taken by the scheduler */
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
+  uint8_t sendData[12] = "Test123456";
+
   while (1)
   {
+	  HAL_UART_Transmit_DMA(&huart1, sendData, 8);
 	  HAL_GPIO_TogglePin(ROT_UP_GPIO_Port, ROT_UP_Pin);
 	  HAL_Delay(100);
 	  HAL_GPIO_TogglePin(ROT_DOWN_GPIO_Port, ROT_DOWN_Pin);

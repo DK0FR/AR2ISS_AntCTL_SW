@@ -64,9 +64,9 @@ void usartClass::initTasks(TaskParams rxTask, TaskParams txTask, UART_HandleType
 	vQueueAddToRegistry(m_hRxQueue, (const char*) nameBuffer);
 
 	snprintf((char*)nameBuffer,20,"%sTxTask",(char*)tempBuffer);
-	xTaskCreate(this->TxTask, (const char*)nameBuffer, 2048, this, 5, NULL);
+	xTaskCreate(this->TxTask, (const char*)nameBuffer, 2048, this, 5, &m_hTxTask);
 	snprintf((char*)nameBuffer,20,"%sRxTask",(char*)tempBuffer);
-	xTaskCreate(this->RxTask, (const char*)nameBuffer, 2048, this, 5, NULL);
+	xTaskCreate(this->RxTask, (const char*)nameBuffer, 2048, this, 5, &m_hRxTask);
 
 }
 
@@ -183,10 +183,8 @@ void usartClass::RxTask(){
 			m_TxTaskCallback(m_huart, localRXBuff, m_rxTaskParam.queueElementLength);
 			memset(localRXBuff,0,10);
 			if(m_LedsOn)
-				HAL_GPIO_WritePin(m_Leds.TXPORT, m_Leds.TXPIN, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(m_Leds.RXPORT, m_Leds.RXPIN, GPIO_PIN_RESET);
 		} else {
-			if(m_LedsOn)
-				HAL_GPIO_TogglePin(m_Leds.RXPORT, m_Leds.RXPIN);
 		}
 	}
 	vPortFree(m_rxDMABuffer);
@@ -197,6 +195,8 @@ void usartClass::rxCpltCallback(){
 
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
+	if(m_hRxQueue != NULL){
+
 	xQueueGenericSendFromISR(m_hRxQueue,m_rxDMABuffer,&xHigherPriorityTaskWoken,queueSEND_TO_BACK);
 
 	memset(m_rxDMABuffer,0,m_rxTaskParam.queueElementLength);
@@ -206,16 +206,18 @@ void usartClass::rxCpltCallback(){
 	if( xHigherPriorityTaskWoken ){
 		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
 	}
+	}
 }
 
 void usartClass::txCpltCallback(){
 
 	BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-
+	if(m_hTxQueue != NULL){
 	vTaskNotifyGiveFromISR(m_hTxTask, &xHigherPriorityTaskWoken);
 
 	if( xHigherPriorityTaskWoken ){
 		portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
+	}
 	}
 }
 

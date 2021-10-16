@@ -214,7 +214,7 @@ __weak void pttControl(void *argument)
 /* USER CODE BEGIN Application */
 
 void  rxCallback( UART_HandleTypeDef * huart, uint8_t* data, uint16_t length){
-	HAL_GPIO_TogglePin(ROT_LEFT_GPIO_Port, ROT_LEFT_Pin);
+	xQueueSend(txQueue, data, 500);
 
 }
 
