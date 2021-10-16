@@ -120,6 +120,14 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  HAL_GPIO_TogglePin(ROT_UP_GPIO_Port, ROT_UP_Pin);
+	  HAL_Delay(100);
+	  HAL_GPIO_TogglePin(ROT_DOWN_GPIO_Port, ROT_DOWN_Pin);
+	  HAL_Delay(100);
+	  HAL_GPIO_TogglePin(ROT_LEFT_GPIO_Port, ROT_LEFT_Pin);
+	  HAL_Delay(100);
+	  HAL_GPIO_TogglePin(ROT_RIGHT_GPIO_Port, ROT_RIGHT_Pin);
+	  HAL_Delay(500);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */

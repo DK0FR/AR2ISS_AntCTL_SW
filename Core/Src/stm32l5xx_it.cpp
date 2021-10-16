@@ -273,7 +273,7 @@ void TIM17_IRQHandler(void)
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 //	SEGGER_SYSVIEW_RecordEnterISR();
-	 if(huart->Instance==USART3) // Is it the USB-Com port?
+	 if(huart->Instance==USART1) // Is it the USB-Com port?
 	  {
 		 RS485Uart.rxCpltCallback();
 	  }
@@ -282,7 +282,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 
 void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
 //	SEGGER_SYSVIEW_RecordEnterISR();
-	if(huart->Instance==USART3) // Is it the USB-Com port?
+	if(huart->Instance==USART1) // Is it the USB-Com port?
 	{
 		RS485Uart.txCpltCallback();
 	}

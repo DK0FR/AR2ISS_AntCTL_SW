@@ -50,6 +50,6 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-Debug/AR2ISS_AntCTL_SW.list
+Debug/
 Debug/AR2ISS_AntCTL_SW.list
 Debug/AR2ISS_AntCTL_SW.bin
